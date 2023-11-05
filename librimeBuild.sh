@@ -16,13 +16,27 @@ fi
 
 # install lua plugin
 rm -rf ${RIME_ROOT}/librime/plugins/lua
-${RIME_ROOT}/librime/install-plugins.sh imfuxiao/librime-lua@main
+function plugin_custom_install() {
+    local plugin="$1"
+    local plugin_dir="$2"
+    echo "${plugin} $(git -C "${plugin_dir}" describe --always)"
+    (
+        cd "${plugin_dir}";
+        git checkout origin/thirdparty -- lua5.4;
+        mkdir thirdparty;
+        mv lua5.4 thirdparty/
 
-# install charcode
-#rm -rf ${RIME_ROOT}/librime/plugins/librime-charcode
-#${RIME_ROOT}/librime/install-plugins.sh rime/librime-charcode
-#extern void rime_require_module_charcode();\
-#  rime_require_module_charcode();\
+        sed -i bak '
+/add_definitions(-DLUA_COMPAT_5_3)/ a\
+  if(${CMAKE_SYSTEM_NAME} MATCHES "iOS")\
+    add_definitions(-DLUA_USE_IOS)\
+  endif()\
+' CMakeLists.txt
+    )
+}
+declare -fx plugin_custom_install
+
+${RIME_ROOT}/librime/install-plugins.sh run=plugin_custom_install hchunhui/librime-lua
 
 # 添加lua模块依赖
 sed -i "" '/#if RIME_BUILD_SHARED_LIBS/,/#endif/c\

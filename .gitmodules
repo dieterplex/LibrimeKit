@@ -3,4 +3,4 @@
 	url = https://github.com/rime/librime.git
 [submodule "boost-iosx"]
 	path = boost-iosx
-	url = https://github.com/imfuxiao/boost-iosx.git
+	url = https://github.com/dieterplex/boost-iosx.git
