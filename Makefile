@@ -6,7 +6,9 @@ COCOAPODS_EXISTS:=$(shell gem list -i cocoapods)
 BOOST_FRAMEWORK_PATH=boost-iosx/frameworks
 ICU_FRAMEWORK_PATH=boost-iosx/scripts/Pods/icu4c-iosx/product/frameworks
 
-.PHONY: cocoapads boost-build boost-clean librime-check librime-build librime-clean
+.PHONY: cocoapads boost-build boost-clean librime-check librime-build librime-clean package all
+
+all: package
 
 cocoapods:
 	$(info gem cocoapads check)
@@ -46,3 +48,9 @@ librime-build: librime-check
 librime-clean:
 	rm -rf ${mkfile_dir}/librime.patch.apply
 	rm -rf librime Frameworks/lib*.xcframework lib/*
+
+package: boost-build librime-build
+	version=$(shell git describe --always --tags --dirty)
+	tar -acf Framworks-${version}.tgz Frameworks
+
+
